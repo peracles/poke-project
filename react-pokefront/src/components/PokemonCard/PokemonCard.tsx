@@ -1,6 +1,7 @@
 import PokemonCardProps from './PokemonCard.types';
 import { useNavigate } from 'react-router-dom';
 import TypeIcon from '../TypeIcon/TypeIcon';
+import PokeballIcon from '../../assets/icons/Poke_Ball_icon.png';
 
 const typeColors: { [key: string]: string } = {
     steel: 'var(--steel-color)',
@@ -48,8 +49,8 @@ const capitalizeFirstLetter = (str: string): string => {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
-const formatDamageRelations = (relations: string[], label: string): React.ReactNode | null => {
-    if (relations.length === 0) return null; // Si no hay relaciones, no mostrar nada
+const formatDamageRelations = (relations: string[] | undefined, label: string): React.ReactNode | null => {
+    if (!relations || relations.length === 0) return null; // Si no hay relaciones, no mostrar nada
 
     return (
         <div className="flex items-center space-x-2">
@@ -85,7 +86,15 @@ const PokemonCard = (props: PokemonCardProps) => {
                     color: textColor,
                 }}
             >
-                <h2 className="text-2xl font-bold mb-1 pl-[2rem]">{pokemon.name.toUpperCase()}</h2>
+                <div className='flex justify-start mb-1 pl-[2rem] items-center'>
+                    <img src={PokeballIcon}
+                        alt="Pokeball"
+                        className="w-6 h-6 inline-block" // Ajusta el tamaño según necesites
+                        title="Pokeball"
+                    />
+                    <h2 className="text-2xl font-bold pl-[.5rem]">{pokemon.name.toUpperCase()}</h2>
+                </div>
+                
                 <div>
                     <div className="p-5 bg-white">
                         <img src={pokemon.sprites.front_default} alt={pokemon.name} className="mx-auto" />
@@ -97,7 +106,14 @@ const PokemonCard = (props: PokemonCardProps) => {
                 </div>
                 <div className="mt-4">
                     <h3 className="text-xl font-semibold">Tipos</h3>
-                    <p>{pokemon.types.join(', ')}</p>
+                    <div className="flex space-x-2">
+                        {pokemon.types.map((type) => (
+                            <div key={type} className="flex items-center space-x-1">
+                                <TypeIcon type={type} />
+                                <span>{capitalizeFirstLetter(type)}</span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
                 <div className="mt-4">
                     <h3 className="text-xl font-semibold">Movimientos</h3>
@@ -114,19 +130,21 @@ const PokemonCard = (props: PokemonCardProps) => {
                         ))}
                     </ul>
                 </div>
-                <div className="mt-4">
-                    <h3 className="text-xl font-semibold">Relaciones de Daño</h3>
-                    <div className="flex flex-col mt-[.5rem]">
-                        {[
-                            formatDamageRelations(pokemon.damage_relations.double_damage_from, 'Debil x2: '),
-                            formatDamageRelations(pokemon.damage_relations.double_damage_to, 'Daño x2: '),
-                            formatDamageRelations(pokemon.damage_relations.half_damage_from, 'Debil x1/2: '),
-                            formatDamageRelations(pokemon.damage_relations.half_damage_to, 'Daño x1/2: '),
-                            formatDamageRelations(pokemon.damage_relations.no_damage_from, 'Debil x0: '),
-                            formatDamageRelations(pokemon.damage_relations.no_damage_to, 'Daño x0: '),
-                        ].filter(Boolean)}
+                {pokemon.damage_relations && ( // Verificar si damage_relations existe
+                    <div className="mt-4">
+                        <h3 className="text-xl font-semibold">Relaciones de Daño</h3>
+                        <div className="flex flex-col mt-[.5rem]">
+                            {[
+                                formatDamageRelations(pokemon.damage_relations.double_damage_from, 'Debil x2: '),
+                                formatDamageRelations(pokemon.damage_relations.double_damage_to, 'Daño x2: '),
+                                formatDamageRelations(pokemon.damage_relations.half_damage_from, 'Debil x1/2: '),
+                                formatDamageRelations(pokemon.damage_relations.half_damage_to, 'Daño x1/2: '),
+                                formatDamageRelations(pokemon.damage_relations.no_damage_from, 'Debil x0: '),
+                                formatDamageRelations(pokemon.damage_relations.no_damage_to, 'Daño x0: '),
+                            ].filter(Boolean)}
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
             <div className='pt-3'>
                 <button className="p-2 bg-blue-500 text-white rounded" onClick={handleClick}>
