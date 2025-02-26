@@ -39,13 +39,12 @@ const getTextColor = (backgroundColor: string): string => {
     if (backgroundColor.includes('gradient')) {
         return '#FFFFFF';
     }
-    const color = backgroundColor.replace('var(', '').replace(')', '');
-    const isLight = ['#FFFFFF', '#FAC000', '#3DD9FF', '#81B9EF'].includes(color);
-    return isLight ? '#000000' : '#FFFFFF';
+    
+    return '#f1f1f1';
 };
 
 const capitalizeFirstLetter = (str: string): string => {
-    if (!str) return str; // Si la cadena está vacía, devolverla tal cual
+    if (!str) return str;
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 };
 
