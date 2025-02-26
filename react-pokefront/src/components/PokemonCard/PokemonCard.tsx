@@ -78,7 +78,6 @@ const PokemonCard = (props: PokemonCardProps) => {
 
     return (
         <div className='flex flex-col justify-center items-end'>
-            {/* <div className="bg-gray-100 p-6 rounded-lg shadow-lg border-8 border-gray-400 min-w-[25rem] min-h-[40rem]"> */}
             <div
                 className="p-6 rounded-lg shadow-lg border-8 border-gray-400 min-w-[25rem] min-h-[40rem]"
                 style={{
