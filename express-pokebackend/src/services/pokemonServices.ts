@@ -2,33 +2,23 @@ import axios from 'axios';
 import Historial from '../models/historial';
 
 export const getPokemonData = async (name: string) => {
-    // Buscar en la base de datos
     const historial = await Historial.findOne({ where: { name: name } });
 
     if (historial) {
         console.log('Obteniendo información de BD');
         return historial.information;
     } else {
-        // Hacer la solicitud a la primera API (Pokémon)
         const pokemonResponse = await axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`);
         const pokemonInfo = pokemonResponse.data;
 
         if (pokemonInfo) {
-            // Verificar si el Pokémon tiene un solo tipo
-            const hasSingleType = pokemonInfo.types.length === 1;
-
-            // Inicializar el objeto de relaciones de daño
             let damageRelations = {};
 
-            if (hasSingleType) {
-                // Extraer el tipo principal del Pokémon
+            if (pokemonInfo.types.length === 1) {
                 const primaryType = pokemonInfo.types[0].type.name;
-
-                // Hacer la solicitud a la segunda API (Tipo)
                 const typeResponse = await axios.get(`https://pokeapi.co/api/v2/type/${primaryType}`);
                 const typeInfo = typeResponse.data;
 
-                // Filtrar las relaciones de daño
                 damageRelations = {
                     double_damage_from: typeInfo.damage_relations.double_damage_from.map((dmg: any) => dmg.name),
                     double_damage_to: typeInfo.damage_relations.double_damage_to.map((dmg: any) => dmg.name),
@@ -39,7 +29,6 @@ export const getPokemonData = async (name: string) => {
                 };
             }
 
-            // Filtrar la información del Pokémon
             const filteredPokeInfo = {
                 name: pokemonInfo.name,
                 height: pokemonInfo.height,
@@ -56,10 +45,9 @@ export const getPokemonData = async (name: string) => {
                     stat_name: stat.stat.name,
                 })),
                 moves: pokemonInfo.moves.map((move: any) => move.move.name),
-                damage_relations: hasSingleType ? damageRelations : undefined, // Solo añadir si tiene un solo tipo
+                damage_relations: pokemonInfo.types.length === 1 ? damageRelations : undefined,
             };
 
-            // Guardar la información en la base de datos
             await Historial.create({
                 name: name,
                 information: filteredPokeInfo,
